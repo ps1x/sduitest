@@ -4,14 +4,21 @@ import { componentRegistry } from '../componentRegistry';
 export class UIStore {
   isLoading = true;
   layoutError = null;
+  
+  // This was the missing property
+  componentDefinitions = [];
+  
   componentStores = [];
-  // This will hold the actual, loaded component functions
   renderableComponents = [];
 
   constructor() {
     makeObservable(this, {
       isLoading: observable,
       layoutError: observable,
+      
+      // We must make it observable
+      componentDefinitions: observable.shallow,
+
       componentStores: observable.shallow,
       renderableComponents: observable.shallow,
       fetchLayout: action,
@@ -41,14 +48,12 @@ export class UIStore {
         const store = registryEntry.storeFactory(def.props);
         stores.push(store);
 
-        // This promise resolves with the actual Component function
-        // only after BOTH data and code are ready.
         return (async () => {
           const [_, module] = await Promise.all([
             store.initialize(),
             registryEntry.importer(),
           ]);
-          return module.default; // The actual component function
+          return module.default;
         })();
       });
 
@@ -58,8 +63,9 @@ export class UIStore {
       
       console.log('UIStore: All data and component code are loaded!');
       
-      // Now, and only now, we are truly ready.
       action(() => {
+        // Here we set the property on the class instance
+        this.componentDefinitions = definitions;
         this.componentStores = stores;
         this.renderableComponents = loadedComponents;
         this.isLoading = false;

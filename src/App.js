@@ -28,6 +28,7 @@ const App = observer(() => {
       </header>
       <main>
         <DynamicComponentRenderer
+          definitions={uiStore.componentDefinitions}
           stores={uiStore.componentStores}
           components={uiStore.renderableComponents}
         />

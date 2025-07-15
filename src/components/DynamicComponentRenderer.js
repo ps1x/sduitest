@@ -1,17 +1,18 @@
 import React from 'react';
 
-const DynamicComponentRenderer = ({ stores, components }) => {
+const DynamicComponentRenderer = ({ stores, components, definitions }) => {
   return (
     <>
-      {components.map((Component, index) => {
+      {definitions.map((def, index) => {
+        const Component = components[index];
         const store = stores[index];
 
         if (!Component || !store) {
-          return <div key={index} className="component-box error">Error rendering component at index {index}</div>;
+          return <div key={def.id || index} className="component-box error">Error rendering component {def.type}</div>;
         }
 
-        // No Suspense needed. Just render the component directly.
-        return <Component key={index} store={store} />;
+        // Use the stable, unique ID from the data as the key
+        return <Component key={def.id} store={store} />;
       })}
     </>
   );

@@ -7,14 +7,18 @@ const sduiLayoutHandler = http.get('/api/sdui-layout', async () => {
   return HttpResponse.json({
     components: [
       {
+        // Add a unique ID for each component instance
+        id: 'user-profile-1',
         type: 'UserProfile',
         props: { userId: 1 },
       },
       {
+        id: 'stock-aapl',
         type: 'StockTicker',
         props: { symbol: 'AAPL' },
       },
       {
+        id: 'user-profile-2',
         type: 'UserProfile',
         props: { userId: 2 },
       },
