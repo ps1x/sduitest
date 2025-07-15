@@ -1,25 +1,39 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { UIStore } from './stores/UIStore';
+import DynamicComponentRenderer from './components/DynamicComponentRenderer';
+import GlobalSpinner from './components/GlobalSpinner';
 import './App.css';
 
-function App() {
+const App = observer(() => {
+  const [uiStore] = useState(() => new UIStore());
+
+  useEffect(() => {
+    uiStore.fetchLayout();
+  }, [uiStore]);
+
+  if (uiStore.layoutError) {
+    return <div className="app-error">Error loading page layout! Check the console.</div>;
+  }
+
+  if (uiStore.isLoading) {
+    return <GlobalSpinner />;
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>Server-Driven UI Demo</h1>
+        <p>This entire layout is dynamically rendered based on a mock API call.</p>
       </header>
+      <main>
+        <DynamicComponentRenderer
+          stores={uiStore.componentStores}
+          components={uiStore.renderableComponents}
+        />
+      </main>
     </div>
   );
-}
+});
 
 export default App;
